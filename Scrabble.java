@@ -49,7 +49,7 @@ public class Scrabble {
 	// Checks if the given word is in the dictionary.
 	public static boolean isWordInDictionary(String word) {
 		for (int i = 0; i < DICTIONARY.length; i++) {
-			if (word == DICTIONARY[i]) {
+			if (word.equals(DICTIONARY[i])) {
 				return true;
 			}
 		}
@@ -116,6 +116,7 @@ public class Scrabble {
 					break;
 				}
 				System.out.println("Invalid word. Try again.");
+				System.out.println();
 			}
 		}
 		if (hand.length() == 0) {
@@ -139,11 +140,11 @@ public class Scrabble {
 			// Gets the user's input, which is all the characters entered by 
 			// the user until the user enter the ENTER character.
 			String input = in.readString();
-			if (input == "n") {
+			if (input.equals("n")) {
 				String newHand = createHand();
 				playHand(newHand);
 			}
-			else if ( input == "e") {
+			else if (input.equals("e")) {
 				break;
 			}
 			else {

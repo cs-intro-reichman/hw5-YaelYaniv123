@@ -48,7 +48,11 @@ public class Scrabble {
 
 	// Checks if the given word is in the dictionary.
 	public static boolean isWordInDictionary(String word) {
-		//// Replace the following statement with your code
+		for (int i = 0; i < DICTIONARY.length; i++) {
+			if (word == DICTIONARY[i]) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -56,16 +60,32 @@ public class Scrabble {
 	// If the length of the word equals the length of the hand, adds 50 points to the score.
 	// If the word includes the sequence "runi", adds 1000 points to the game.
 	public static int wordScore(String word) {
-		//// Replace the following statement with your code
-		return 0;
+		if (word.length() == 0) {
+			return 0;
+		}
+		int score = 0;
+		for (int i = 0; i < word.length(); i++) {
+			char letter = word.charAt(i);
+			score += SCRABBLE_LETTER_VALUES[letter - 97];
+		}
+		score = score * word.length();
+		if (word.length() == HAND_SIZE) {
+			score += 50;
+		}
+		if (subsetOf("runi",word)) {
+			score += 1000;
+		}
+		return score;
 	}
 
 	// Creates a random hand of length (HAND_SIZE - 2) and then inserts
 	// into it, at random indexes, the letters 'a' and 'e'
 	// (these two vowels make it easier for the user to construct words)
 	public static String createHand() {
-		//// Replace the following statement with your code
-		return null;
+		String hand = randomStringOfLetters(8);
+		hand = insertRandomly('a', hand);
+		hand = insertRandomly('e', hand);
+		return hand;
 	}
 	
     // Runs a single hand in a Scrabble game. Each time the user enters a valid word:
@@ -85,12 +105,21 @@ public class Scrabble {
 			// non-whitespace characters. Whitespace is either space characters, or  
 			// end-of-line characters.
 			String input = in.readString();
-			//// Replace the following break statement with code
-			//// that completes the hand playing loop
-			break;
+			if (isWordInDictionary(input) && subsetOf(input, hand)) {
+				score += wordScore(input);
+				System.out.println(input + " earned " + wordScore(input) + " points. Score: " + score + "points.");
+				System.out.println();
+				hand = remove(hand, input);
+			}
+			else {
+				if (input.equals(".")) {
+					break;
+				}
+				System.out.println("Invalid word. Try again.");
+			}
 		}
 		if (hand.length() == 0) {
-	        System.out.println("Ran out of letters. Total score: " + score + " points");
+	        System.out.println("Ran out of letters. Total score: " + score + " points\n");
 		} else {
 			System.out.println("End of hand. Total score: " + score + " points");
 		}
@@ -110,9 +139,18 @@ public class Scrabble {
 			// Gets the user's input, which is all the characters entered by 
 			// the user until the user enter the ENTER character.
 			String input = in.readString();
-			//// Replace the following break statement with code
-			//// that completes the game playing loop
-			break;
+			if (input == "n") {
+				String newHand = createHand();
+				playHand(newHand);
+			}
+			else if ( input == "e") {
+				break;
+			}
+			else {
+				System.out.println("Error");
+				break;
+			}
+			
 		}
 	}
 
@@ -122,7 +160,7 @@ public class Scrabble {
 		////testScrabbleScore();    
 		////testCreateHands();  
 		////testPlayHands();
-		////playGame();
+		playGame();
 	}
 
 	public static void testBuildingTheDictionary() {
@@ -152,4 +190,73 @@ public class Scrabble {
 		//playHand("arbffip");
 		//playHand("aretiin");
 	}
+
+	public static boolean subsetOf(String str1, String str2) {
+        int counter = 0;
+        for (int i = 0; i < str1.length(); i++) {
+            if (countChar(str1, str1.charAt(i)) <= countChar(str2, str1.charAt(i))) {
+                counter++;
+            }
+       }
+       if (counter == str1.length()) {
+        return true;
+       }
+       else {
+        return false;
+       }
+    }
+
+	public static String randomStringOfLetters(int n) {
+        String newOne = "";
+        for (int i = 0; i < n; i++) {
+            char toAdd = (char)(Math.random() * 26 + 97);
+            newOne += toAdd;
+        }
+        return newOne;
+    }
+
+	public static String insertRandomly(char ch, String str) {
+		// Generate a random index between 0 and str.length()
+		int randomIndex = (int) (Math.random() * (str.length() + 1));
+		// Insert the character at the random index
+		String result = str.substring(0, randomIndex) + ch + str.substring(randomIndex);
+		return result;
+   } 
+
+   public static int countChar(String str, char ch) {
+	int count = 0;
+	if (str.length() == 0 || ch == '\0') {
+		return 0;
+	}
+	for (int i = 0; i < str.length(); i++) {
+		if (str.charAt(i) == ch) {
+			count++;
+		}
+	}
+	return count;
+	}
+	
+	public static String remove(String str1, String str2) {
+		String newStr = "";
+		
+		if (str1.length() == 0) {
+		 return null;
+		}
+ 
+		if (str2.length() == 0) {
+		 return str1;
+		}
+ 
+		for (int i = 0; i < str1.length(); i++) {
+			 if (countChar(str2, str1.charAt(i)) == 0) {
+				 newStr += str1.charAt(i);
+			 }
+			 else if (countChar(str1, str1.charAt(i)) > countChar(str2, str1.charAt(i))) {
+				 if (countChar(str1.substring(0, i), str1.charAt(i)) == countChar(str2, str1.charAt(i))){
+					 newStr += str1.charAt(i);
+				 }
+			 }
+		}
+		 return newStr;
+	 }
 }

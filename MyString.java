@@ -73,7 +73,7 @@ public class MyString {
             return str;
         }
 
-        String newOne = " " + str.charAt(0);
+        String newOne = "" + str.charAt(0);
         for (int i = 1; i < str.length(); i++) {
             newOne += " " + str.charAt(i);
         }
